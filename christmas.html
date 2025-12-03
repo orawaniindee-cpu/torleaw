@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Tree Animation</title>
+    <style>
+        body {
+            background-color: #000; /* พื้นหลังสีดำ */
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px; /* เพิ่มมิติ */
+        }
+
+        .tree-container {
+             width: 200px;
+             height: 300px;
+             position: relative;
+             transform-style: preserve-3d;
+             animation: spin 15s linear infinite;
+        }
+
+        /* สร้างจุดดาวแต่ละจุด */
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff; /* แสงฟุ้งๆ */
+            top: 50%;
+            left: 50%;
+            /* สำคัญ: ต้องให้จุดหันหน้าเข้าหาคนดูเสมอ ไม่งั้นจะดูแบนๆ เวลาหมุน */
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+        }
+
+        /* ดาวดวงใหญ่บนยอด */
+        .top-star {
+            position: absolute;
+            /* ปรับตำแหน่งดาวบนยอดให้พอดี */
+            top: -30px; 
+            left: 50%;
+            width: 0; 
+            height: 0; 
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 25px solid #ffd700; /* สีทอง */
+            transform: translateX(-50%);
+            filter: drop-shadow(0 0 15px #ffd700);
+            z-index: 100;
+        }
+
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tree-container" id="tree">
+        <div class="top-star"></div>
+    </div>
+
+    <script>
+        const tree = document.getElementById('tree');
+        const count = 150; // เพิ่มจำนวนดาวให้แน่นขึ้นนิดนึง
+
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            // --- ส่วนที่แก้ไข ---
+
+            // 1. ความสูง (y): ไล่จากบน (-150) ลงล่าง (+150)
+            const y = (i / count) * 300 - 150; 
+            
+            // 2. รัศมี (radius): แก้สูตรใหม่!
+            // ถ้า y อยู่บนสุด (-150) รัศมีจะเป็น 0 (ยอดแหลม)
+            // ถ้า y อยู่ล่างสุด (+150) รัศมีจะเป็น 120 (ฐานกว้าง)
+            const radius = ((y + 150) / 300) * 120; 
+
+            // --------------------
+
+            const angle = i * 137.5; // องศาการกระจายตัว (Golden Angle)
+            
+            // กำหนดสีสลับกัน (แดง เขียว ขาว เหลือง)
+            const colors = ['#ff4d4d', '#4dff4d', '#ffffff', '#ffff99'];
+            const color = colors[i % colors.length];
+            star.style.backgroundColor = color;
+            star.style.boxShadow = `0 0 6px ${color}, 0 0 12px ${color}`;
+
+            // จัดตำแหน่ง 3D
+            star.style.transform = `rotateY(${angle}deg) translateZ(${radius}px) translateY(${y}px)`;
+            
+            tree.appendChild(star);
+        }
+    </script>
+</body>
+</html>
